@@ -4,4 +4,6 @@
     <string name="notes_app">Notes App</string>
     <string name="login_register">Login/Register</string>
     <string name="edit_button_image">edit button image</string>
+    <string name="profile">Profile</string>
+    <string name="logout">Logout</string>
 </resources>

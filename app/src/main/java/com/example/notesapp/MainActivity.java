@@ -1,9 +1,12 @@
 package com.example.notesapp;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.widget.Toast;
 import android.widget.Toolbar;
 
@@ -20,7 +23,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        // intialize the views
+        // initialize the views
         initViews();
         
         fabEdit.setOnClickListener(view -> onEdit());
@@ -33,5 +36,27 @@ public class MainActivity extends AppCompatActivity {
 
     private void onEdit(){
         Toast.makeText(this, "fab clicked", Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.main_menu,menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        int id = item.getItemId();
+
+        switch (id){
+            case R.id.action_logout:
+                Toast.makeText(this, "ACTION LOGOUT", Toast.LENGTH_SHORT).show();
+                return true;
+            case R.id.action_profile:
+                Toast.makeText(this, "ACTION PROFILE", Toast.LENGTH_SHORT).show();
+                return true;
+        }
+
+        return super.onOptionsItemSelected(item);
     }
 }
