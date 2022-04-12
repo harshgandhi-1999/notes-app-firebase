@@ -10,16 +10,14 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
-import android.widget.Toolbar;
 
 import com.firebase.ui.auth.AuthUI;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
-import com.google.android.material.appbar.MaterialToolbar;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.GetTokenResult;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements FirebaseAuth.AuthStateListener {
     private static final String TAG = "MainActivity";
 
     private RecyclerView notesRecView;
@@ -34,11 +32,6 @@ public class MainActivity extends AppCompatActivity {
         initViews();
         
         fabEdit.setOnClickListener(view -> onEdit());
-
-        if(FirebaseAuth.getInstance().getCurrentUser()==null){
-            // if no user then start login register activity
-            startLoginRegisterActivity();
-        }
     }
 
     private void startLoginRegisterActivity() {
@@ -57,6 +50,11 @@ public class MainActivity extends AppCompatActivity {
 
     private void onEdit(){
         Toast.makeText(this, "fab clicked", Toast.LENGTH_SHORT).show();
+    }
+
+    private void logoutUser(){
+        Toast.makeText(this, "User signed out", Toast.LENGTH_SHORT).show();
+        AuthUI.getInstance().signOut(this);
     }
 
     @Override
@@ -81,20 +79,33 @@ public class MainActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    private void logoutUser(){
-        Toast.makeText(this, "User signed out", Toast.LENGTH_SHORT).show();
-        AuthUI.getInstance()
-                .signOut(this)
-                .addOnCompleteListener(new OnCompleteListener<Void>() {
-                    @Override
-                    public void onComplete(@NonNull Task<Void> task) {
-                        if(task.isSuccessful()){
-                            // start the login and register activity
-                            startLoginRegisterActivity();
-                        }else{
-                            Log.e(TAG, "onComplete: "+task.getException());
-                        }
-                    }
-                });
+    @Override
+    protected void onStart() {
+        super.onStart();
+        FirebaseAuth.getInstance().addAuthStateListener(this);
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        FirebaseAuth.getInstance().removeAuthStateListener(this);
+    }
+
+    @Override
+    public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
+        if(firebaseAuth.getCurrentUser()==null){
+            // if no user then start login register activity
+            startLoginRegisterActivity();
+            return;
+        }
+        firebaseAuth
+            .getCurrentUser()
+            .getIdToken(true)
+            .addOnSuccessListener(new OnSuccessListener<GetTokenResult>() {
+                @Override
+                public void onSuccess(GetTokenResult getTokenResult) {
+                    Log.d(TAG, "onSuccess: "+getTokenResult.getToken());
+                }
+            });
     }
 }
