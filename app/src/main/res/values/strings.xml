@@ -6,4 +6,6 @@
     <string name="edit_button_image">edit button image</string>
     <string name="profile">Profile</string>
     <string name="logout">Logout</string>
+    <string name="display_name">Display Name</string>
+    <string name="update_profile">Update Profile</string>
 </resources>
