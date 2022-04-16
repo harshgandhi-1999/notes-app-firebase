@@ -14,11 +14,18 @@ import android.view.MenuItem;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.example.notesapp.models.Note;
 import com.firebase.ui.auth.AuthUI;
+import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.firebase.Timestamp;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.GetTokenResult;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.FirebaseFirestore;
+
+import java.util.Date;
 
 public class MainActivity extends AppCompatActivity implements FirebaseAuth.AuthStateListener {
     private static final String TAG = "MainActivity";
@@ -60,9 +67,33 @@ public class MainActivity extends AppCompatActivity implements FirebaseAuth.Auth
                 .setView(edtTxtNote)
                 .setPositiveButton("Add", (dialogInterface, i) -> {
                     Log.d(TAG, "onEdit: " + edtTxtNote.getText());
+                    addNote(edtTxtNote.getText().toString());
                 })
                 .setNegativeButton("Cancel",null)
                 .show();
+    }
+
+    private void addNote(String text){
+
+        String userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        Note note = new Note(text,false,new Timestamp(new Date()),userId);
+
+        FirebaseFirestore.getInstance()
+                .collection("notes")
+                .add(note)
+                .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+                    @Override
+                    public void onSuccess(DocumentReference documentReference) {
+                        Toast.makeText(MainActivity.this, "Note Added successfully", Toast.LENGTH_SHORT).show();
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Toast.makeText(MainActivity.this, e.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
+                        Log.d(TAG, "onFailure: " + e.getLocalizedMessage());
+                    }
+                });
     }
 
     private void logoutUser(){

@@ -8,4 +8,6 @@
     <string name="logout">Logout</string>
     <string name="display_name">Display Name</string>
     <string name="update_profile">Update Profile</string>
+    <string name="note_title">note title</string>
+    <string name="some_date">Some date</string>
 </resources>
