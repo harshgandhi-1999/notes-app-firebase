@@ -4,11 +4,14 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.EditText;
 import android.widget.Toast;
 
 import com.firebase.ui.auth.AuthUI;
@@ -31,7 +34,7 @@ public class MainActivity extends AppCompatActivity implements FirebaseAuth.Auth
         // initialize the views
         initViews();
         
-        fabEdit.setOnClickListener(view -> onEdit());
+        fabEdit.setOnClickListener(view -> handleCreateNote());
     }
 
     private void startLoginRegisterActivity() {
@@ -48,8 +51,18 @@ public class MainActivity extends AppCompatActivity implements FirebaseAuth.Auth
         notesRecView = findViewById(R.id.notesRecView);
     }
 
-    private void onEdit(){
-        Toast.makeText(this, "fab clicked", Toast.LENGTH_SHORT).show();
+    private void handleCreateNote(){
+        // now show alert dialog
+        final EditText edtTxtNote = new EditText(this);
+
+        new AlertDialog.Builder(this)
+                .setTitle("Add Note")
+                .setView(edtTxtNote)
+                .setPositiveButton("Add", (dialogInterface, i) -> {
+                    Log.d(TAG, "onEdit: " + edtTxtNote.getText());
+                })
+                .setNegativeButton("Cancel",null)
+                .show();
     }
 
     private void logoutUser(){
